@@ -7,7 +7,7 @@ const Currencies = () => {
 
     useEffect(()=>{
         (async()=>{
-            let response = await axios.get('http://localhost:5000/currency-list')
+            let response = await axios.get('https://amazon-sellers-app.herokuapp.com/currency-list')
             console.log(response)
             setCurrency(response.data.currencies)
         })()

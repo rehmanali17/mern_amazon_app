@@ -1,21 +1,16 @@
 const router = require('express').Router()
-const { postRequestAddCurrency } = require('../controllers/AddCurrency')
-const { postRequestAddSales, requestAddSales } = require('../controllers/AddSales')
-const { getAllCurrencies } = require('../controllers/AllCurrencies')
-const { getAllSales } = require('../controllers/AllSales')
+const { postRequestAddSales, requestAddSales, getAllSales, deleteSingleSale, deleteAllSales } = require('../controllers/Sales')
 
-router.get('/currency-list', getAllCurrencies)
+
 
 router.get('/all-sales', getAllSales)
-
-
-
-router.post('/add-currency',postRequestAddCurrency)
 
 router.post('/add-sales',postRequestAddSales)
 
 router.post('/add-sales-db',requestAddSales)
 
+router.delete('/single-sale/:id', deleteSingleSale)
 
+router.delete('/all-sales', deleteAllSales)
 
 module.exports = router

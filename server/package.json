@@ -4,7 +4,7 @@
   "description": "An Amazon seller app",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "author": "Rehman Ali",
   "license": "MIT",

@@ -4,11 +4,9 @@ const config = require('config')
 const cors = require('cors')
 
 const app = express()
-const PORT = config.get('PORT') || process.env.PORT
+const PORT = process.env.PORT || config.get('PORT')
 
-// app.set('views', __dirname + '/public/views')
-// app.set('view engine', 'ejs')
-// app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+
 app.use(express.json({ extended: true, limit: '5mb' }))
 app.use(cors())
 
@@ -22,6 +20,7 @@ mongoose.connect(config.get('mongoURi'), {useNewUrlParser:true, useUnifiedTopolo
         process.exit(1)
     })
 
-app.use('/',require('./routes/sales'))
+app.use('/sales',require('./routes/sales'))
+app.use('/currency',require('./routes/currency'))
 
 

@@ -46,7 +46,7 @@ const AddSales = () => {
                 let data = {
                     records: results
                 }
-                let response = await axios.post('http://localhost:5000/add-sales-db',data,config)
+                let response = await axios.post('https://amazon-sellers-app.herokuapp.com/add-sales-db',data,config)
                 setError(response.data.message)
                 setResults([])
             }catch(err){

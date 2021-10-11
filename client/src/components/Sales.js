@@ -12,7 +12,7 @@ const Sales = () => {
     useEffect(()=>{
         (async()=>{
             try{
-                let response = await axios.get('http://localhost:5000/all-sales')
+                let response = await axios.get('https://amazon-sellers-app.herokuapp.com/all-sales')
                 setResults(response.data.result)
             }catch(err){
                 setError(err.response.data.message)

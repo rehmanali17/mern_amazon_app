@@ -25,7 +25,7 @@ const AddCurrency = () => {
             }
          }
         try{
-            let response = await axios.post('http://localhost:5000/add-currency',formData,config)
+            let response = await axios.post('https://amazon-sellers-app.herokuapp.com/add-currency',formData,config)
             // console.log(response)
             setResult(response.data.message)
         }catch(err){

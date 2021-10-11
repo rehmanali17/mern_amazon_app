@@ -1,14 +1,48 @@
 const mongoose = require('mongoose')
-const Currency = require('../models/currencies')
 const Sales = require('../models/sales')
+const Currency = require('../models/currencies')
 const fs = require('fs')
 const csv = require('csv-parser')
-const { allDates } = require('../dateExtraction')
-const { patterns } = require('../patterns')
+const { allDates } = require('../utils/dateExtraction')
+const { patterns } = require('../utils/patterns')
 const axios = require('axios')
 const config = require('config')
 const upload = require('../multer-setup/setup')
 
+const getAllSales = async (req,res) => {
+    try{
+        let docs = await Sales.find().select('-__v')
+        let results = {
+            length: docs.length,
+            sales: docs.map(doc => {
+                return {
+                    id: doc._id,
+                    dd: doc.dd,
+                    mmm: doc.mmm,
+                    yyyy: doc.yyyy,
+                    type: doc.type,
+                    sku: doc.sku,
+                    quantity: doc.quantity,
+                    marketplace: doc.marketplace,
+                    product_sales: doc.product_sales,
+                    total: doc.total,
+                    currency: doc.currency,
+                    rate_to_usd: doc.rate_to_usd,
+                    product_sales_usd: doc.product_sales_usd,
+                    total_usd: doc.total_usd,
+                    requests: {
+                        DELETE: `http://localhost:5000/sales/single-sale/${doc._id}`
+                    }
+                }
+            })
+        }
+        
+        res.status(200).json(results)
+    }catch(error){
+        res.status(400).json({ message: 'Error fetching the sales' })
+    }
+    
+}
 
 const postRequestAddSales = (req,res) =>{
     try{
@@ -126,4 +160,34 @@ const requestAddSales = (req,res)=>{
     }).catch(err => res.status(400).json({message: err.message}))
 }
 
-module.exports = { postRequestAddSales, requestAddSales }
+
+const deleteSingleSale = async (req,res)=>{
+    try{
+        const { id } = req.params
+        if(mongoose.Types.ObjectId.isValid(id)){
+            await Sales.findByIdAndDelete(id)
+            res.status(200).json({message: "Sale deleted successfully"})
+        }else{
+            res.status(300).json({message: "Invalid sale id"})
+        }   
+    }catch(error){
+        console.log(error.message)
+        res.status(300).json({
+            message: 'Error deleting the sale'
+        })
+    }
+}
+
+const deleteAllSales = async (req,res)=>{
+    try{
+        await Sales.deleteMany({})
+        res.status(200).json({message: "All Sales deleted successfully"}) 
+    }catch(error){
+        console.log(error.message)
+        res.status(300).json({
+            message: 'Error deleting the sales'
+        })
+    }
+}
+
+module.exports = { getAllSales, postRequestAddSales, requestAddSales, deleteSingleSale, deleteAllSales }
