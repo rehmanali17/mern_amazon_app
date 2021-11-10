@@ -13,7 +13,6 @@ const AddSales = () => {
     }
 
     const handleChange = (e)=>{
-        console.log(e.target.value)
         setStore(e.target.value)
     }
 
@@ -28,7 +27,8 @@ const AddSales = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             }
-            let response = await axios.post('http://localhost:5000/add-sales',fd,config)
+            let response = await axios.post('https://amazon-sellers-app.herokuapp.com/sales/add-sales',fd,config)
+            // let response = await axios.post('http://localhost:5000/sales/add-sales',fd,config)
             setResults(response.data.result)
         }catch(err){
             setError(err.response.data.message)
@@ -46,7 +46,8 @@ const AddSales = () => {
                 let data = {
                     records: results
                 }
-                let response = await axios.post('https://amazon-sellers-app.herokuapp.com/add-sales-db',data,config)
+                let response = await axios.post('https://amazon-sellers-app.herokuapp.com/sales/add-sales-db',data,config)
+                // let response = await axios.post('http://localhost:5000/sales/add-sales-db',data,config)
                 setError(response.data.message)
                 setResults([])
             }catch(err){

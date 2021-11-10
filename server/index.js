@@ -20,7 +20,10 @@ mongoose.connect(config.get('mongoURi'), {useNewUrlParser:true, useUnifiedTopolo
         process.exit(1)
     })
 
-app.use('/sales',require('./routes/sales'))
-app.use('/currency',require('./routes/currency'))
+app.use('/auth',require('./routes/auth/auth-routes'))    
+app.use('/customer',require('./routes/customer/customer-routes'))    
+app.use('/seller',require('./routes/seller-account/seller-account')) 
+app.use('/currency',require('./routes/currency/currency'))   
+app.use('/sales',require('./routes/sales/sales'))
 
 

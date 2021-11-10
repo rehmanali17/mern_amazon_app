@@ -1,37 +1,66 @@
 import axios from 'axios'
-import React, { useState, useEffect  } from 'react'
+import React, { useState, useEffect, Fragment  } from 'react'
 import { Link } from 'react-router-dom'
 import { CSVLink } from "react-csv";
  
 
 
 const Sales = () => {
+    const [loading, setLoading] = useState(true)
     const [results,setResults] = useState([])
-    const [error,setError] = useState('')
+    const [message,setMessage] = useState('')
 
     useEffect(()=>{
         (async()=>{
             try{
-                let response = await axios.get('https://amazon-sellers-app.herokuapp.com/all-sales')
-                setResults(response.data.result)
+                let response = await axios.get('https://amazon-sellers-app.herokuapp.com/sales/all-sales')
+                // let response = await axios.get('http://localhost:5000/sales/all-sales')
+                setResults(response.data.sales)
+                setLoading(false)
             }catch(err){
-                setError(err.response.data.message)
+                setMessage(err.response.data.message)
             }
         })()
-    })
+    },[])
+
+    const deleteSingleSale = async(id)=>{
+        try{
+            let response = await axios.delete(`https://amazon-sellers-app.herokuapp.com/sales/single-sale/${id}`)
+            // let response = await axios.delete(`http://localhost:5000/sales/single-sale/${id}`)
+            setMessage(response.data.message)
+            setResults(results.filter(result => id !== result._id))
+        }catch(err){
+            setMessage(err.response.data.message)
+        }
+    }
+
+    const deleteAllSales = async(id)=>{
+        try{
+            let response = await axios.delete('https://amazon-sellers-app.herokuapp.com/sales/all-sales')
+            // let response = await axios.delete('http://localhost:5000/sales/all-sales')
+            setMessage(response.data.message)
+            setResults([])
+        }catch(err){
+            setMessage(err.response.data.message)
+        }
+    }
 
 
-    return results.length === 0 ? <div>Loading....</div> : (
-        <div style={{margin: 0}}>
+    return loading === true ? <div className="App">Loading....</div> : (
+        <Fragment>
+            {results.length === 0 ? <div className="App">No Sales</div> : <div style={{margin: 0}}>
             <br />
-            {error !== '' && <p>{error}</p>}
+            {message !== '' && <p>{message}</p>}
             <br />
+            <button onClick={deleteAllSales}>Delete All Sales</button>
+            <br /><br />
             {results.length > 0 &&
             <div>
                 <CSVLink filename="All-Sales.csv" data={results}>Export</CSVLink><br/><br/><br/>
             <table border="1">
                 <thead>
                     <tr>
+                        <th>Delete</th>
                         <th>DD</th>
                         <th>MMM</th>
                         <th>YYYY</th>
@@ -51,6 +80,7 @@ const Sales = () => {
                     {results.map((element,i) => {
                         return (
                             <tr key={i}>
+                                <td><button onClick={()=> {deleteSingleSale(element.id)}}>Delete</button></td>
                                 <td>{element.dd}</td>
                                 <td>{element.mmm}</td>
                                 <td>{element.yyyy}</td>
@@ -71,8 +101,10 @@ const Sales = () => {
                     </table>
             </div>
             }
-            <Link to="/">Home</Link>
-        </div>
+            
+        </div> }
+        <Link to="/">Home</Link>
+    </Fragment>
     )
 }
 

@@ -46,10 +46,76 @@ const ukStoreDate = (date) => {
 }
 
 // Extracing US Store Date
-const usStoreDate = ukStoreDate
+const usStoreDate = (date) => {
+    let indexDay = 0
+    let indexYear = 0
+    let day;
+    let month= "";
+    let year= "";
+
+    for(let i = 0 ; i < date.length ; i++){
+        if(date[i] != ' '){
+            month = month + date[i]     
+        }else{
+            indexDay = i + 1
+            month = month.toUpperCase()
+            break
+        }
+    }
+
+    if(date[indexDay+1] === ','){
+        day = `0${date[indexDay]}`
+        indexYear = indexDay + 3
+    }else{
+        indexYear = indexDay + 4
+        day = `${date[indexDay]}${date[indexDay+1]}`
+    }
+    
+    for(let i = indexYear; i < date.length ; i++){
+        if(date[i] != ' '){
+            year = year + date[i]     
+        }else{
+            break
+        }
+    }
+    return [day,month,year,indexMonthLists[month]]
+}
 
 // Extracing CA Store Date
-const caStoreDate = ukStoreDate
+const caStoreDate = (date) => {
+    let indexDay = 0
+    let indexYear = 0
+    let day;
+    let month= "";
+    let year= "";
+
+    for(let i = 0 ; i < date.length ; i++){
+        if(date[i] != '.'){
+            month = month + date[i]     
+        }else{
+            indexDay = i + 2
+            month = month.toUpperCase()
+            break
+        }
+    }
+
+    if(date[indexDay+1] === ','){
+        day = `0${date[indexDay]}`
+        indexYear = indexDay + 3
+    }else{
+        indexYear = indexDay + 4
+        day = `${date[indexDay]}${date[indexDay+1]}`
+    }
+    
+    for(let i = indexYear; i < date.length ; i++){
+        if(date[i] != ' '){
+            year = year + date[i]     
+        }else{
+            break
+        }
+    }
+    return [day,month,year,indexMonthLists[month]]
+}
 
 // Extracting GE Store Date
 const geStoreDate = (date)=>{

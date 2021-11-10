@@ -4,7 +4,7 @@ const moment = require('moment')
 
 
 const currencySchema = new Schema({
-    market_place: String,
+    store: String,
     currency: String,
     date_added: {
         type: String,

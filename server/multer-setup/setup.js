@@ -4,7 +4,7 @@ const path = require('path')
 
 const storage = multer.diskStorage({
     destination: (req,file,cb)=>{
-        cb(null, 'uploads/')
+        cb(null, 'uploads/store-files/')
     },
     filename: (req,file,cb)=>{
         cb(null, file.fieldname + '-'+ Date.now() + path.extname(file.originalname))
@@ -22,6 +22,6 @@ const upload = multer({
             cb("Only csv files are allowed")
         }
     }
-}).single('storeFile')
+}).single('store-file')
 
 module.exports = upload

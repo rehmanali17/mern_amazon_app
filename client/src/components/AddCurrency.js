@@ -4,11 +4,11 @@ import axios from 'axios'
 
 const AddCurrency = () => {
     const [formData, setFormData] = useState({
-        market_place: '',
-        currency: ''
+        currency: '',
+        store: 'ukStore'
     })
     const [result, setResult] = useState('')
-    const { market_place, currency } =  formData
+    const { store, currency } = formData
 
     const handleChange = (e)=>{
         setFormData({
@@ -19,14 +19,15 @@ const AddCurrency = () => {
 
     const handleSubmit = async (e)=>{
         e.preventDefault()
+        console.log(formData)
         const config = { 
             headers: {
                 'Content-Type': 'application/json'
             }
          }
         try{
-            let response = await axios.post('https://amazon-sellers-app.herokuapp.com/add-currency',formData,config)
-            // console.log(response)
+            let response = await axios.post('https://amazon-sellers-app.herokuapp.com/currency/add-currency',formData,config)
+            // let response = await axios.post('http://localhost:5000/currency/add-currency',formData,config)
             setResult(response.data.message)
         }catch(err){
             setResult(err.response.data.message)
@@ -34,9 +35,23 @@ const AddCurrency = () => {
     }
 
     return (
-        <div>
+        <div className="App">
             <form onSubmit={handleSubmit}>
-                <input type="text" name="market_place" value={market_place} onChange={handleChange} placeholder="Market Place"/><br/><br/>
+                <select name="store" value={store} onChange={handleChange}>
+                    <option value="ukStore">UK</option>
+                    <option value="usStore">USA</option>
+                    <option value="esStore">SP</option>
+                    <option value="itStore">IT</option>
+                    <option value="caStore">CA</option>
+                    <option value="mxStore">MX</option>
+                    <option value="geStore">GE</option>
+                    <option value="frStore">FR</option>
+                    <option value="nlStore">NL</option>
+                    <option value="bzStore">BZ</option>
+                    <option value="swStore">SW</option>
+                    <option value="tkStore">TK</option>
+                    <option value="poStore">PO</option>
+                </select><br /><br/>
                 <input type="text" placeholder="Currency" name="currency" onChange={handleChange} value={currency} /><br/><br/>
                 <input type="submit" value="Add" />
             </form>
