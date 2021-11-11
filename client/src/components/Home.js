@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom'
 
 const Home = () => {
     return (
-        <div className="App">
-            <Link to="/view-currencies">View Currencies</Link><br/><br/>
-            <Link to="/add-currency">Add Currency</Link><br/><br/>
-            <Link to="/add-sales">Add Sales</Link><br/><br/>
-            <Link to="/all-sales">View Sales</Link>
+        <div className="d-flex">
+            <div>
+                <Link to="/login">Login</Link> <br/><br/>
+                <Link to="/signup">Sign Up</Link> <br/><br/>
+            </div>
         </div>
     )
 }

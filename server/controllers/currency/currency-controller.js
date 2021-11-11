@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Currency = require('../../models/currency/currency')
 const config = require('config')
+const { validationResult } = require('express-validator')
 
 const AddCurrency = async (req,res) => {
     try{
@@ -32,23 +33,27 @@ const AddCurrency = async (req,res) => {
 const GetCurrencies = async (req,res) => {
     try{
         let response = await Currency.find().select('-__v')
-        let results = {
-            length: response.length,
-            currencies: response.map(element => {
-                return {
-                    _id: element._id,
-                    store: element.store,
-                    currency: element.currency,
-                    date: element.date_added,
-                    requests: {
-                        DELETE: `${config.get('baseURL')}/currency/single-currency/${element._id}`
-                    } 
-                }
-            })
+        if(response.length > 0){
+            let results = {
+                length: response.length,
+                currencies: response.map(element => {
+                    return {
+                        _id: element._id,
+                        store: element.store,
+                        currency: element.currency,
+                        date: element.date_added,
+                        requests: {
+                            DELETE: `${config.get('baseURL')}/currency/single-currency/${element._id}`
+                        } 
+                    }
+                })
+            }
+            res.status(200).json(results)
+        }else{
+            res.status(400).json({ msg: 'No Currencies added' })
         }
-        res.status(200).json(results)
     }catch(error){
-        res.status(400).json({ message: 'Error fetching the currencies' })
+        res.status(400).json({ msg: 'Error fetching the currencies' })
     }
     
 }

@@ -14,32 +14,36 @@ const GetSales = async (req,res) => {
     try{
         const { customer, seller_account } = req.query
         let docs = await Sales.find({account_holder:{customer,seller_account}}).select('-__v')
-        let results = {
-            length: docs.length,
-            sales: docs.map(doc => {
-                return {
-                    id: doc._id,
-                    dd: doc.dd,
-                    mmm: doc.mmm,
-                    yyyy: doc.yyyy,
-                    type: doc.type,
-                    sku: doc.sku,
-                    quantity: doc.quantity,
-                    marketplace: doc.marketplace,
-                    product_sales: doc.product_sales,
-                    total: doc.total,
-                    currency: doc.currency,
-                    rate_to_usd: doc.rate_to_usd,
-                    product_sales_usd: doc.product_sales_usd,
-                    total_usd: doc.total_usd,
-                    requests: {
-                        DELETE: `${config.get('baseURL')}/sales/delete-single-sale/${doc._id}`
+        if(docs.length > 0){
+            let results = {
+                length: docs.length,
+                sales: docs.map(doc => {
+                    return {
+                        id: doc._id,
+                        dd: doc.dd,
+                        mmm: doc.mmm,
+                        yyyy: doc.yyyy,
+                        type: doc.type,
+                        sku: doc.sku,
+                        quantity: doc.quantity,
+                        marketplace: doc.marketplace,
+                        product_sales: doc.product_sales,
+                        total: doc.total,
+                        currency: doc.currency,
+                        rate_to_usd: doc.rate_to_usd,
+                        product_sales_usd: doc.product_sales_usd,
+                        total_usd: doc.total_usd,
+                        requests: {
+                            DELETE: `${config.get('baseURL')}/sales/delete-single-sale/${doc._id}`
+                        }
                     }
-                }
-            })
+                })
+            }
+            
+            res.status(200).json(results)
+        }else{
+            res.status(400).json({ message: 'No sales for this customer' })
         }
-        
-        res.status(200).json(results)
     }catch(error){
         res.status(400).json({ message: 'Error fetching the sales' })
     }

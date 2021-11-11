@@ -39,24 +39,30 @@ const AddCustomer = async (req,res)=>{
 const GetCustomers = async (req,res)=>{
     try{
         let docs = await Customer.find().select('-__v')
-        let customers = docs.map(doc => {
-            return {
-                _id:doc._id,
-                name:doc.name,
-                jurisdiction:doc.jurisdiction,
-                url:doc.url,
-                requests:{
-                    ADD: config.get('baseURL')+'/seller/add-seller-account?id='+doc._id+'&name='+doc.name,
-                    GET: config.get('baseURL')+'/seller/get-seller-accounts?id='+doc._id+'&name='+doc.name,
+        if(docs.length > 0){
+            let customers = docs.map(doc => {
+                return {
+                    _id:doc._id,
+                    name:doc.name,
+                    jurisdiction:doc.jurisdiction,
+                    url:doc.url,
+                    requests:{
+                        ADD: config.get('baseURL')+'/seller/add-seller-account?id='+doc._id+'&name='+doc.name,
+                        GET: config.get('baseURL')+'/seller/get-seller-accounts?id='+doc._id+'&name='+doc.name,
+                    }
                 }
-            }
-        })
-        res.status(200).json({customers});
+            })
+            res.status(200).json({customers});
+        }else{
+            res.status(400).json({
+                msg: "No customers have been added",
+            });
+        }
     }catch(error){
-        res.status(400).json([{
+        res.status(400).json({
             msg: "Error retreiving the customers",
             error: error.message
-        }]);
+        });
     }
 }
 

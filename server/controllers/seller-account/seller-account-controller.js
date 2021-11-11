@@ -42,24 +42,31 @@ const GetSellerAccounts = async (req,res)=>{
     try{
         const { id,name } = req.query
         let docs = await Seller.find({customer:{id,name}}).select('-__v')
-        let seller_accounts = docs.map(doc => {
-            return {
-                _id:doc._id,
-                seller_account:doc.seller_account,
-                customer_name:doc.customer.name,
-                customer_id:doc.customer.id,
-                requests:{
-                    GET: config.get('baseURL')+'/sales/get-sales/?customer='+doc.customer.id+'&seller_account='+doc._id,
-                    Map: config.get('baseURL')+'/sales/map-sales/?customer='+doc.customer.id+'&seller_account='+doc._id,
+        if(docs.length > 0){
+            let seller_accounts = docs.map(doc => {
+                return {
+                    _id:doc._id,
+                    seller_account:doc.seller_account,
+                    customer_name:doc.customer.name,
+                    customer_id:doc.customer.id,
+                    requests:{
+                        GET: config.get('baseURL')+'/sales/get-sales/?customer='+doc.customer.id+'&seller_account='+doc._id,
+                        MAP: config.get('baseURL')+'/sales/map-sales/?customer='+doc.customer.id+'&seller_account='+doc._id,
+                    }
                 }
-            }
-        })
-        res.status(200).json({seller_accounts});
+            })
+            res.status(200).json({seller_accounts});
+        }else{
+            res.status(400).json({
+                msg: "No seller accounts have been added for this customer",
+                error: error.message
+            });
+        }
     }catch(error){
-        res.status(400).json([{
+        res.status(400).json({
             msg: "Error retreiving the seller accounts",
             error: error.message
-        }]);
+        });
     }
 }
 
