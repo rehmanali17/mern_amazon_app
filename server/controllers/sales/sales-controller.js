@@ -203,68 +203,164 @@ const DeleteAllSales = async (req,res)=>{
     }
 }
 
-const getGroupedSales = async(req,res)=>{
+const GetDistinctYears = async(req,res)=>{
+    try {
+        const years = await Sales.distinct('yyyy')
+        res.status(200).json({years})
+    } catch (error) {
+        res.status(400).json({
+            msg: 'Error fetching the data',
+            error:error.message
+        })
+    }
+     
+}
+
+const GetSumSales = async(req,res)=>{
 
     try {
+        const { customer, seller_account, year, type } = req.query
+        let param = {};
+        if(type == 'quantity'){
+            param = { $sum: "$quantity"}
+        }else if(type == 'product-sales'){
+            param = { $sum: "$product_sales_usd"}
+        }else if(type == 'total'){
+            param = { $sum: "$total_usd"}
+        }
+        
+        
 
-        // const years = await Sales.distinct('yyyy')
-        // let months = years.map(async year => {
-        //     return await Sales.distinct('mmm' , {'yyyy': year})
-        // })
-        // Promise.all(months)
-        //     .then( async resolvedValues => {
-        //         const sales = await Sales.aggregate([
-        //             { $match: {} },
-        //             { $group: { 
-        //                 _id: {mmm: "$mmm", yyyy: "$yyyy", sku: "$sku" },
-        //                 quantity_sum: { $sum: "$quantity"},
-        //                 product_sales_usd_sum: { $sum: "$product_sales_usd"},
-        //                 total_usd_sum: { $sum: "$total_usd"} 
-        //             }},
-        //             { $sort:{ _id: -1 }}
-        //         ])
-        //         res.status(200).json({years, months: resolvedValues,  sales})
-        //     })
-        //     .catch(err => res.status(400).json({message: err.message})) 
-        
-        
         const sales = await Sales.aggregate([
-            { $match: {} },
+            { $match: {
+                account_holder:{
+                    customer,
+                    seller_account
+                    },
+                    yyyy: year
+                }
+            },
             { $group: { 
                 _id: {mmm: "$mmm", yyyy: "$yyyy", sku: "$sku" },
-                quantity_sum: { $sum: "$quantity"},
-                product_sales_usd_sum: { $sum: "$product_sales_usd"},
-                total_usd_sum: { $sum: "$total_usd"} 
+                result: param
             }},
             { $sort:{ _id: -1 }}
         ])
-        let years = {} 
-        sales.forEach(sale => {
-            let tempYear = sale['_id']['yyyy']
-            let tempMonth = sale['_id']['mmm']
-            if(Object.keys(years).includes(tempYear)){
-                if(!years[tempYear].includes(tempMonth)){
-                    years[tempYear].push(tempMonth)
-                }
-            }else{
-                years[tempYear] = []
-                years[tempYear].push(tempMonth) 
-            }
-        })
-        res.status(200).json({years,sales}) 
-        
 
-        // Sales.count()
-        // .then(sales => 
-        //     // sales.map()
+        if(sales.length > 0){
+            let sortedMonths = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+            let finalMonths = []
+            let months = []
+
+            sales.forEach(sale => {
+                let tempMonth = sale['_id']['mmm']
+                if(!(months.includes(tempMonth))){
+                    months.push(tempMonth)   
+                }
+            })
+
+            sortedMonths.forEach(m => {
+                if(months.includes(m)){
+                    finalMonths.push(m)
+                }
+            })
             
-        // )
-        // .catch(err => res.status(400).json({message: err.message}))
+            const skus = []
+            let mappedSales = {}
+            sales.forEach(sale => {
+                if(!skus.includes(sale['_id']['sku'])){
+                    skus.push(sale['_id']['sku'])
+                }
+                mappedSales = {
+                    ...mappedSales,
+                    [`${sale['_id']['sku']}-${sale['_id']['mmm']}`]: sale['result']
+                }
+            })
+            
+
+            res.status(200).json({skus,months:finalMonths,mappedSales})
+        }else{
+            res.status(400).json({msg: 'No sales for this year'})
+        }
+
+         
+    
         
     } catch (error) {
-        res.status(400).json({message: error.message})
+        res.status(400).json({msg: 'Error retreiving the sales', error:error.message})
     }
 }
 
-module.exports = { GetSales, MapSales, AddSales, DeleteSingleSale, DeleteAllSales }
+const GetVolumeWeightedSales = async(req,res)=>{
+
+    try {
+        const { customer, seller_account, year, type } = req.query
+        let param = {};
+        if(type == 'product-sales'){
+            param = { $sum: "$product_sales_usd"}
+        }else if(type == 'total'){
+            param = { $sum: "$total_usd"}
+        }
+        
+
+        const sales = await Sales.aggregate([
+            { $match: {
+                account_holder:{
+                    customer,
+                    seller_account
+                    },
+                    yyyy: year
+                }
+            },
+            { $group: { 
+                _id: {mmm: "$mmm", yyyy: "$yyyy", sku: "$sku" },
+                result: param,
+                quantity: { $sum: "$quantity" }
+            }},
+            { $sort:{ _id: -1 }}
+        ])
+
+        if(sales.length > 0){
+            let sortedMonths = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+            let finalMonths = []
+            let months = []
+
+            sales.forEach(sale => {
+                let tempMonth = sale['_id']['mmm']
+                if(!(months.includes(tempMonth))){
+                    months.push(tempMonth)   
+                }
+            })
+
+            sortedMonths.forEach(m => {
+                if(months.includes(m)){
+                    finalMonths.push(m)
+                }
+            })
+            
+            const skus = []
+            let mappedSales = {}
+            sales.forEach(sale => {
+                if(!skus.includes(sale['_id']['sku'])){
+                    skus.push(sale['_id']['sku'])
+                }
+                mappedSales = {
+                    ...mappedSales,
+                    [`${sale['_id']['sku']}-${sale['_id']['mmm']}`]: sale['result']/sale['quantity']
+                }
+            })
+            
+
+            res.status(200).json({skus,months:finalMonths,mappedSales})
+        }else{
+            res.status(400).json({msg: 'No sales for this year'})
+        }
+
+        
+    } catch (error) {
+        res.status(400).json({msg: 'Error retreiving the sales', error:error.message})
+    }
+}
+
+module.exports = { GetSales, MapSales, AddSales, DeleteSingleSale, DeleteAllSales, GetSumSales, GetVolumeWeightedSales ,  GetDistinctYears }
 

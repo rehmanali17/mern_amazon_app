@@ -30,9 +30,10 @@ const ViewSellerAccounts = ({location}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
-    const redirect = (redirect_url,request_url) =>{
+    const redirect = (redirect_url,request_url,data) =>{
         history.push(redirect_url,{
-            request_url
+            request_url,
+            data
         })
     }
 
@@ -55,6 +56,7 @@ const ViewSellerAccounts = ({location}) => {
                             <th>Customer</th>
                             <th>Seller Account</th>
                             <th>View Sales</th>
+                            <th>Sales Analysis</th>
                             <th>Add Sales</th>
                         </tr>
                     </thead>
@@ -65,8 +67,9 @@ const ViewSellerAccounts = ({location}) => {
                             <td>{i+1}</td>
                             <td>{element.customer_name}</td>
                             <td>{element.seller_account}</td>
-                            <td><button onClick={() => { redirect('/user/seller-account/sales/view',element.requests.GET) }} >View</button></td>
-                            <td><button onClick={() => { redirect('/user/seller-account/sales/add',element.requests.MAP) }} >Add</button></td>
+                            <td><button onClick={() => { redirect('/user/seller-account/sales/view',element.requests.GET,{seller_account:element._id,customer:element.customer_id}) }} >View</button></td>
+                            <td><button onClick={() => { redirect('/user/seller-account/sales-analysis/view','',{seller_account:element._id,customer:element.customer_id}) }} >View</button></td>
+                            <td><button onClick={() => { redirect('/user/seller-account/sales/add',element.requests.MAP,{seller_account:element._id,customer:element.customer_id}) }} >Add</button></td>
                         </tr>
                     )
                 })}

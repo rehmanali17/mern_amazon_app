@@ -25,3 +25,30 @@ code {
   justify-content: center;
   align-items: center;
 }
+
+.center{
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+
+.year-btn{
+  margin: 0 20px;
+  cursor: pointer;
+  text-decoration: underline;
+  color: blue;
+}
+
+.mt-4{
+  margin-top: 40px;
+}
+.mb-4{
+  margin-bottom: 40px;
+}
+
+.modified-d-flex{
+  width: 100vw;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+}

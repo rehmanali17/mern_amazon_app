@@ -14,6 +14,12 @@ import AddSellerAccount from './components/seller-accounts/AddSellerAccount';
 import ViewSellerAccounts from './components/seller-accounts/ViewSellerAccounts';
 import AddSales from './components/sales/AddSales';
 import ViewSales from './components/sales/ViewSales';
+import Links from './components/sales-analysis/Links';
+import Quantity from './components/sales-analysis/sum/Quantity';
+import ProductSales from './components/sales-analysis/sum/ProductSales';
+import Total from './components/sales-analysis/sum/Total';
+import VolumeWeightedProductSales from './components/sales-analysis/volume-weighted/VolumeWeightedProductSales'
+import VolumeWeightedTotal from './components/sales-analysis/volume-weighted/VolumeWeightedTotal'
 
 function App() {
   return (
@@ -32,6 +38,13 @@ function App() {
                   <Route exact path="/user/seller-account/view" component={ViewSellerAccounts} />
                   <Route exact path="/user/seller-account/sales/add" component={AddSales} />
                   <Route exact path="/user/seller-account/sales/view" component={ViewSales} />
+                  <Route exact path="/user/seller-account/sales-analysis/view" component={Links} />
+                  <Route exact path="/user/seller-account/sales-analysis/sum/quantity" component={Quantity} />
+                  <Route exact path="/user/seller-account/sales-analysis/sum/product-sales" component={ProductSales} />
+                  <Route exact path="/user/seller-account/sales-analysis/sum/total" component={Total} />
+                  <Route exact path="/user/seller-account/sales-analysis/volume-weighted/product-sales" component={VolumeWeightedProductSales} />
+                  <Route exact path="/user/seller-account/sales-analysis/volume-weighted/total" component={VolumeWeightedTotal} />
+                  
               </Switch>
       </Router>
     </div>

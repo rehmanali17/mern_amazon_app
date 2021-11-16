@@ -1,18 +1,22 @@
 const router = require('express').Router()
-const { GetSales, MapSales, AddSales, DeleteSingleSale, DeleteAllSales } = require('../../controllers/sales/sales-controller')
+const { GetSales, MapSales, AddSales, DeleteSingleSale, DeleteAllSales, GetSumSales, GetDistinctYears, GetVolumeWeightedSales } = require('../../controllers/sales/sales-controller')
+const auth = require('../../middleware/auth/auth')
 
 
+router.get('/get-sales',auth,GetSales)
 
-router.get('/get-sales', GetSales)
+router.post('/map-sales',auth,MapSales)
 
-router.post('/map-sales',MapSales)
+router.post('/add-sales',auth,AddSales)
 
-router.post('/add-sales',AddSales)
+router.delete('/delete-single-sale/:id',auth, DeleteSingleSale)
 
-router.delete('/delete-single-sale/:id', DeleteSingleSale)
+router.delete('/delete-all-sales',auth, DeleteAllSales)
 
-router.delete('/delete-all-sales', DeleteAllSales)
+router.get('/get-distinct-years',auth,GetDistinctYears)
 
-// router.get('/get-group-sales', getGroupedSales)
+router.get('/get-sum-sales', GetSumSales)
+
+router.get('/get-volume-weighted-sales', GetVolumeWeightedSales)
 
 module.exports = router
