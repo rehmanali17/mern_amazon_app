@@ -5,7 +5,7 @@ import { baseURL } from "../../../utils/urls";
 import axios from "axios";
 import exportData from "../../../utils/export-table-data";
 
-const ProductSales = ({ location }) => {
+const RollingAverageTotal = ({ location }) => {
     const history = useHistory();
     let token = verify_token(history);
     let years = location.state.years;
@@ -26,8 +26,8 @@ const ProductSales = ({ location }) => {
     const handleExportClick = () => {
         exportData(
             table.current,
-            "Product Sales",
-            `product-sales-${request_year}.xlsx`
+            "Annual Rolling Average Total",
+            `annual-rolling-average-total-${request_year}.xlsx`
         );
     };
 
@@ -47,7 +47,7 @@ const ProductSales = ({ location }) => {
             try {
                 setLoading(true);
                 let response = await axios.get(
-                    `${baseURL}/sales/get-sum-sales`,
+                    `${baseURL}/sales/get-rolling-averages-sales`,
                     config
                 );
                 setResponse_data({
@@ -99,8 +99,8 @@ const ProductSales = ({ location }) => {
                                 Export
                             </button>
                             <table
-                                className="w-100 m-auto"
                                 ref={table}
+                                className="w-100 m-auto"
                                 border="1"
                             >
                                 <thead>
@@ -126,21 +126,45 @@ const ProductSales = ({ location }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {response_data.skus.map((element, i) => {
+                                    {response_data.skus.map((sku, i) => {
+                                        let index = 0;
+                                        let startEntry = 0;
+                                        let unchangedEntry = 0;
                                         return (
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
-                                                <td>{element}</td>
+                                                <td>{sku}</td>
                                                 {response_data.months.map(
                                                     (month, j) => {
+                                                        let prevEntery =
+                                                            response_data
+                                                                .mappedSales[
+                                                                `${sku}-${month}`
+                                                            ];
+                                                        if (
+                                                            typeof prevEntery ===
+                                                            "number"
+                                                        ) {
+                                                            unchangedEntry +=
+                                                                prevEntery;
+                                                            startEntry =
+                                                                unchangedEntry;
+                                                        }
+                                                        if (startEntry !== 0) {
+                                                            index++;
+                                                            startEntry =
+                                                                startEntry /
+                                                                index;
+                                                        }
                                                         return (
                                                             <td key={j}>
-                                                                {
-                                                                    response_data
-                                                                        .mappedSales[
-                                                                        `${element}-${month}`
-                                                                    ]
-                                                                }
+                                                                {startEntry !==
+                                                                    0 &&
+                                                                    Number(
+                                                                        startEntry
+                                                                    ).toFixed(
+                                                                        2
+                                                                    )}
                                                             </td>
                                                         );
                                                     }
@@ -158,4 +182,4 @@ const ProductSales = ({ location }) => {
     );
 };
 
-export default ProductSales;
+export default RollingAverageTotal;
