@@ -3,5 +3,6 @@
     "mongoURi": "mongodb+srv://rehman_ali17:malik70@cluster0.p7ukn.mongodb.net/amazon_management?retryWrites=true&w=majority",
     "exchangeApiKey": "5e8a53c830daa730691cb989c690a0a5",
     "jwtSecret": "ASDFGHJKLPOIUYTREWQZXCVBNM)(*&^%$#@!1234567890",
-    "baseURL": "https://amazon-sellers-app.herokuapp.com"
+    "prodBaseURL": "https://amazon-sellers-app.herokuapp.com/api",
+    "devBaseURL": "http://localhost:8080/api"
 }

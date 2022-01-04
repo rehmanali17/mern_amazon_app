@@ -37,7 +37,7 @@ const GetSales = async (req, res) => {
                         total_usd: doc.total_usd,
                         requests: {
                             DELETE: `${config.get(
-                                "baseURL"
+                                "prodBaseURL"
                             )}/sales/delete-single-sale/${doc._id}`,
                         },
                     };
