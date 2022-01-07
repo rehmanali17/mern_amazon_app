@@ -40,27 +40,19 @@ const ViewCustomers = () => {
         });
     };
 
-    // const deleteSingleCurrency = async(url,id)=>{
-    //     setMessage('Loading')
-    //     try{
-    //         let response = await axios.delete(url,config)
-    //         setMessage(response.data.msg)
-    //         setCurrency(currency.filter(curr => id !== curr._id))
-    //     }catch(err){
-    //         setMessage(err.response.data.msg)
-    //     }
-    // }
-
-    // const deleteAllCurrency = async()=>{
-    //     setMessage('Loading')
-    //     try{
-    //         let response = await axios.delete(`${baseURL}/currency/all-currency`,config)
-    //         setMessage(response.data.msg)
-    //         setCurrency([])
-    //     }catch(err){
-    //         setMessage(err.response.data.msg)
-    //     }
-    // }
+    const deleteCustomer = async (id) => {
+        setMessage("Loading");
+        try {
+            const response = await axios.delete(
+                `${baseURL}/customer/delete-customer/${id}`,
+                config
+            );
+            setMessage(response.data.msg);
+            setCustomers(customers.filter((customer) => id !== customer._id));
+        } catch (error) {
+            setMessage(error.response.data.msg);
+        }
+    };
 
     return loading === true ? (
         <div className="d-flex">Loading....</div>
@@ -87,6 +79,7 @@ const ViewCustomers = () => {
                                 <th>URL</th>
                                 <th>View Seller Accounts</th>
                                 <th>Add Seller Account</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,12 +114,20 @@ const ViewCustomers = () => {
                                                 Add
                                             </button>
                                         </td>
+                                        <td>
+                                            <button
+                                                onClick={() => {
+                                                    deleteCustomer(element._id);
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 );
                             })}
                         </tbody>
                     </table>
-                    <br />
                     <br />
                     {message !== "" && <p>{message}</p>}
                     <br />

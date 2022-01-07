@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import { verify_token } from "../../utils/verify-token";
+import { baseURL } from "../../utils/urls";
 
 const ViewSellerAccounts = ({ location }) => {
     const history = useHistory();
@@ -40,6 +41,20 @@ const ViewSellerAccounts = ({ location }) => {
         });
     };
 
+    const deleteCustomer = async (id) => {
+        setMessage("Loading");
+        try {
+            const response = await axios.delete(
+                `${baseURL}/seller/delete-seller-account/${id}`,
+                config
+            );
+            setMessage(response.data.msg);
+            setAccounts(accounts.filter((account) => id !== account._id));
+        } catch (error) {
+            setMessage(error.response.data.msg);
+        }
+    };
+
     return loading === true ? (
         <div className="d-flex">Loading....</div>
     ) : (
@@ -63,6 +78,7 @@ const ViewSellerAccounts = ({ location }) => {
                                 <th>View Sales</th>
                                 <th>Sales Analysis</th>
                                 <th>Add Sales</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,6 +140,15 @@ const ViewSellerAccounts = ({ location }) => {
                                                 }}
                                             >
                                                 Add
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button
+                                                onClick={() => {
+                                                    deleteCustomer(element._id);
+                                                }}
+                                            >
+                                                Delete
                                             </button>
                                         </td>
                                     </tr>

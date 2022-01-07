@@ -1,6 +1,9 @@
 const Customer = require("../../models/customer/customer");
+const SellerAccount = require("../../models/seller-account/seller-account");
+const Sales = require("../../models/sales/sales");
 const { validationResult } = require("express-validator");
 const config = require("config");
+const mongoose = require("mongoose");
 
 const AddCustomer = async (req, res) => {
     try {
@@ -84,4 +87,28 @@ const GetCustomers = async (req, res) => {
     }
 };
 
-module.exports = { AddCustomer, GetCustomers };
+const deleteCustomer = async (req, res) => {
+    const session = await mongoose.startSession();
+    try {
+        const { id } = req.params;
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            session.startTransaction();
+            await Customer.findByIdAndDelete(id, { session });
+            await SellerAccount.deleteMany({ "customer.id": id }, { session });
+            await Sales.deleteMany(
+                { "account_holder.customer": id },
+                { session }
+            );
+            await session.commitTransaction();
+            res.status(200).json({ msg: "Customer deleted successfully" });
+        } else {
+            res.status(300).json({ message: "Invalid customer id" });
+        }
+    } catch (error) {
+        res.status(400).json({
+            msg: "Error deleting the customer",
+        });
+    }
+};
+
+module.exports = { AddCustomer, GetCustomers, deleteCustomer };

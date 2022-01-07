@@ -1,6 +1,8 @@
 const { validationResult } = require("express-validator");
 const Seller = require("../../models/seller-account/seller-account");
+const Sales = require("../../models/sales/sales");
 const config = require("config");
+const mongoose = require("mongoose");
 
 const AddSellerAccount = async (req, res) => {
     try {
@@ -100,4 +102,29 @@ const GetSellerAccounts = async (req, res) => {
     }
 };
 
-module.exports = { AddSellerAccount, GetSellerAccounts };
+const deleteSellerAccount = async (req, res) => {
+    const session = await mongoose.startSession();
+    try {
+        const { id } = req.params;
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            session.startTransaction();
+            await Seller.findByIdAndDelete(id, { session });
+            await Sales.deleteMany(
+                { "account_holder.seller_account": id },
+                { session }
+            );
+            await session.commitTransaction();
+            res.status(200).json({
+                msg: "Seller Account deleted successfully",
+            });
+        } else {
+            res.status(300).json({ message: "Invalid account id" });
+        }
+    } catch (error) {
+        res.status(400).json({
+            msg: "Error deleting the seller account",
+        });
+    }
+};
+
+module.exports = { AddSellerAccount, GetSellerAccounts, deleteSellerAccount };
